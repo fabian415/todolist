@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#3B82F6" />
+    <meta name="description" content="AI 驅動的任務管理系統" />
+    <title>ToDoList - 任務管理系統</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 抑制 ResizeObserver 錯誤 -->
+    <script>
+      // 這是一個已知的 ResizeObserver 瀏覽器問題，不影響功能
+      window.addEventListener('error', function(e) {
+        if (e.message === 'ResizeObserver loop completed with undelivered notifications.' ||
+            e.message === 'ResizeObserver loop limit exceeded') {
+          e.stopImmediatePropagation();
+          return false;
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <noscript>您需要啟用 JavaScript 才能運行此應用程式。</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+
