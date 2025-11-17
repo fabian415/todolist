@@ -65,3 +65,4 @@ function Sidebar({ isSidebarOpen, projects, selectedProjectId, onSelectProject, 
 
 export default Sidebar;
 
+

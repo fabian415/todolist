@@ -30,3 +30,4 @@ function BoardView({ columns, onDragStart, onDragOver, onDrop, onOpenTask, onAdd
 
 export default BoardView;
 
+
