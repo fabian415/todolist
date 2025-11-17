@@ -1,0 +1,28 @@
+name: ${APP_NAME}
+networks:
+  gais-network:
+    external: true
+services:
+  backend:
+    image: ${APP_NAME}:${APP_VERSION}
+    pull_policy: never
+    container_name: ${APP_NAME}-app
+    environment:
+      - APP_NAME=${APP_NAME}
+      - APP_VERSION=${APP_VERSION}
+      - APP_TITLE=${APP_TITLE}
+      - APP_DESCRIPTION=${APP_DESCRIPTION}
+      - APP_LOGO=/app/logo.png
+      - APP_HOST=backend
+      - APP_PORT=${APP_PORT}
+      - APP_TOKEN=${APP_TOKEN}
+      - GAIS_HOST=${GAIS_HOST}
+      - GAIS_PORT=${GAIS_PORT}
+      - GAIS_MODEL=${GAIS_MODEL}
+      - GAIS_PROTOCOL=${GAIS_PROTOCOL}
+      - OLLAMA_HOST=${OLLAMA_HOST}
+    ports:
+      - "${HOST_PORT}:${APP_PORT}"
+    networks:
+      - gais-network
+    restart: unless-stopped

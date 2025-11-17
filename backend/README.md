@@ -77,10 +77,15 @@ backend/
 ├── routes/
 │   ├── auth.js             # 認證路由
 │   ├── projects.js         # 專案路由
-│   └── tasks.js            # 任務路由
+│   ├── tasks.js            # 任務路由
+│   └── gais.js             # GAIS 整合路由
+├── services/
+│   ├── llmService.js       # LLM AI 服務
+│   └── gaisService.js      # GAIS 整合服務
 ├── .gitignore
 ├── package.json
 ├── README.md
+├── logo.png                # 應用程式 Logo（用於 GAIS）
 └── server.js               # 伺服器入口檔案
 \`\`\`
 
@@ -108,8 +113,19 @@ backend/
 - `PUT /api/tasks/:id` - 更新任務
 - `PATCH /api/tasks/:id/status` - 更新任務狀態
 - `DELETE /api/tasks/:id` - 刪除任務
+- `POST /api/tasks/ai/parse` - AI 任務拆解
+
+### GAIS 整合
+- `GET /api/ping` - 健康檢查
+- `GET /api/diagnosis` - 系統診斷
+- `POST /api/reregister` - 重新註冊到 GAIS
+- `GET /api/gais/status` - GAIS 註冊狀態
+- `GET /api/gais/config` - 應用程式配置
+- `POST /api/chat` - AI 聊天（SSE 串流）
 
 ## 環境變數說明
+
+### 基本配置
 
 | 變數名稱 | 說明 | 預設值 | 必填 |
 |---------|------|--------|------|
@@ -120,6 +136,34 @@ backend/
 | JWT_EXPIRE | Token 過期時間 | 7d | 否 |
 | CORS_ORIGIN | 允許的前端來源 | http://localhost:3000 | 否 |
 
+### AI 功能配置（可選）
+
+| 變數名稱 | 說明 | 預設值 | 必填 |
+|---------|------|--------|------|
+| OLLAMA_BASE_URL | Ollama API 地址 | http://localhost:11434/v1 | 否 |
+| OLLAMA_MODEL | 使用的 AI 模型 | llama3.2 | 否 |
+| OPENAI_API_KEY | OpenAI API 金鑰 | - | 否 |
+
+### GAIS 整合配置（可選）
+
+| 變數名稱 | 說明 | 預設值 | 必填 |
+|---------|------|--------|------|
+| APP_NAME | 應用程式唯一名稱 | todolist | 否* |
+| APP_VERSION | 應用程式版本 | 1.0.0 | 否 |
+| APP_TITLE | 應用程式顯示標題 | ToDoList 專案管理系統 | 否 |
+| APP_DESCRIPTION | 應用程式描述 | - | 否 |
+| APP_LOGO | Logo 檔案路徑 | ./logo.png | 否 |
+| APP_HOST | 監聽主機 | 0.0.0.0 | 否 |
+| APP_PORT | 應用程式端口 | 5000 | 否 |
+| APP_TOKEN | GAIS 認證 Token | - | 是* |
+| GAIS_HOST | GAIS 伺服器主機 | localhost | 否 |
+| GAIS_PORT | GAIS 伺服器端口 | 8000 | 否 |
+| GAIS_PROTOCOL | GAIS API 版本 | v1 | 否 |
+| GAIS_MODEL | GAIS 使用的模型 | llama3 | 否 |
+| OLLAMA_HOST | Ollama 服務地址 | http://localhost:11434 | 否 |
+
+\* 如果要啟用 GAIS 整合，`APP_TOKEN` 為必填
+
 ## 開發注意事項
 
 1. **密碼安全**: 使用 bcryptjs 加密，絕不儲存明文密碼
@@ -127,6 +171,40 @@ backend/
 3. **CORS**: 預設只允許 localhost:3000，生產環境需調整
 4. **資料驗證**: 使用 Mongoose schema 驗證
 5. **錯誤處理**: 全域錯誤處理中介軟體統一處理
+6. **GAIS 整合**: 
+   - 啟動時自動註冊到 GAIS（如果配置了 APP_TOKEN）
+   - 關閉時自動註銷
+   - 未配置 GAIS 時應用程式仍可正常運行
+
+## GAIS 整合
+
+本應用程式支援整合 GenAI Studio (GAIS) 平台。
+
+### 快速設定
+
+1. 在 `.env` 中設定 GAIS 相關變數（參考 `env.example`）
+2. 確保設定 `APP_TOKEN`
+3. 啟動應用程式，會自動註冊到 GAIS
+
+### 測試 GAIS 功能
+
+```bash
+# 測試健康檢查
+curl http://localhost:5000/api/ping
+
+# 測試診斷
+curl http://localhost:5000/api/diagnosis
+
+# 查看註冊狀態
+curl http://localhost:5000/api/gais/status
+
+# 手動重新註冊
+curl -X POST http://localhost:5000/api/reregister
+```
+
+### 詳細文檔
+
+詳細的 GAIS 整合說明請參考：[GAIS_INTEGRATION.md](../GAIS_INTEGRATION.md)
 
 ## 故障排除
 
@@ -155,5 +233,6 @@ sudo systemctl status mongod
 ## 授權
 
 MIT License
+
 
 

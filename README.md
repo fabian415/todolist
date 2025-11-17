@@ -11,6 +11,7 @@
 
 ### 核心功能
 - 🤖 **AI 智能助手** - 使用 LLM 自動拆解任務描述成結構化任務（NEW！）
+- 🔌 **GAIS 整合** - 整合 GenAI Studio 平台，可在 GAIS 中管理和使用（NEW！）
 - 🎯 **多專案管理** - 建立、編輯、刪除專案
 - 📋 **看板系統** - 拖放式 Kanban（待辦、進行中、已完成）
 - ✅ **任務管理** - 完整的任務生命週期管理
@@ -72,7 +73,7 @@ npm install
 
 ### 3. 設定環境變數
 
-在 `backend` 目錄下建立 `.env` 檔案：
+在 `backend` 目錄下建立 `.env` 檔案（參考 `backend/env.example`）：
 
 \`\`\`env
 # Server Configuration
@@ -92,6 +93,23 @@ CORS_ORIGIN=http://localhost:3000
 # AI Configuration (可選，用於 AI 任務拆解功能)
 OLLAMA_BASE_URL=http://localhost:11434/v1
 OLLAMA_MODEL=llama3.2
+
+# GAIS Configuration (可選，用於 GenAI Studio 整合)
+APP_NAME=todolist
+APP_VERSION=1.0.0
+APP_TITLE=ToDoList 專案管理系統
+APP_DESCRIPTION=一個功能完整的專案與任務管理系統，整合 AI 智能助手
+APP_LOGO=./logo.png
+APP_HOST=0.0.0.0
+APP_PORT=5000
+APP_TOKEN=your_gais_app_token_here
+
+GAIS_HOST=localhost
+GAIS_PORT=8000
+GAIS_PROTOCOL=v1
+GAIS_MODEL=llama3
+
+OLLAMA_HOST=http://localhost:11434
 \`\`\`
 
 ### 3.5 設定 AI 功能（可選）
@@ -170,9 +188,11 @@ ToDoList/
 │   ├── routes/             # 路由定義
 │   │   ├── auth.js
 │   │   ├── projects.js
-│   │   └── tasks.js
+│   │   ├── tasks.js
+│   │   └── gais.js         # GAIS 整合路由
 │   ├── services/           # 服務層
-│   │   └── llmService.js   # LLM AI 服務
+│   │   ├── llmService.js   # LLM AI 服務
+│   │   └── gaisService.js  # GAIS 整合服務
 │   ├── .gitignore
 │   ├── package.json
 │   ├── test-llm.js         # AI 功能測試腳本
@@ -211,6 +231,17 @@ ToDoList/
 
 ## 🔌 API 端點
 
+### GAIS 整合 API
+
+| 方法 | 端點 | 描述 | 權限 |
+|------|------|------|------|
+| GET | `/api/ping` | 健康檢查端點 | 公開 |
+| GET | `/api/diagnosis` | 系統診斷資訊 | 公開 |
+| POST | `/api/reregister` | 重新註冊到 GAIS | 公開 |
+| GET | `/api/gais/status` | GAIS 註冊狀態 | 公開 |
+| GET | `/api/gais/config` | 應用程式配置資訊 | 公開 |
+| POST | `/api/chat` | AI 聊天端點（SSE 串流） | 公開 |
+
 ### 認證 API
 
 | 方法 | 端點 | 描述 | 權限 |
@@ -247,9 +278,10 @@ ToDoList/
 
 詳細 API 文檔請參考 [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 
-**AI 功能相關文檔：**
+**相關文檔：**
 - [AI_SETUP.md](./AI_SETUP.md) - AI 功能設定與使用指南
 - [TEST_AI_FEATURE.md](./TEST_AI_FEATURE.md) - AI 功能測試指南
+- [GAIS_INTEGRATION.md](./GAIS_INTEGRATION.md) - GAIS 整合說明文檔
 
 ## 🔒 安全性
 
