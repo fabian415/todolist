@@ -2,7 +2,32 @@ name: ${APP_NAME}
 networks:
   gais-network:
     external: true
+
+volumes:
+  mongodb-data:
+    driver: local
+
 services:
+  mongodb:
+    image: mongo:7.0
+    container_name: ${APP_NAME}-mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=todolist
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - gais-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     image: ${APP_NAME}:${APP_VERSION}
     pull_policy: never
@@ -21,8 +46,12 @@ services:
       - GAIS_MODEL=${GAIS_MODEL}
       - GAIS_PROTOCOL=${GAIS_PROTOCOL}
       - OLLAMA_HOST=${OLLAMA_HOST}
+      - MONGODB_URI=mongodb://admin:secret@mongodb:27017/todolist?authSource=admin
     ports:
       - "${HOST_PORT}:${APP_PORT}"
     networks:
       - gais-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
     restart: unless-stopped

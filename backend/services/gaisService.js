@@ -24,8 +24,8 @@ class GAISService {
     this.appLogo = process.env.APP_LOGO || './logo.png';
     
     // 網路配置
-    this.appHost = process.env.APP_HOST || '0.0.0.0';
-    this.appPort = process.env.APP_PORT || process.env.PORT || 5000;
+    this.appHost = process.env.APP_HOST;
+    this.appPort = process.env.APP_PORT;
     this.appToken = process.env.APP_TOKEN;
     
     // GAIS 伺服器配置

@@ -44,19 +44,19 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/tasks', require('./routes/tasks'));
 
-// 根路由
-app.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: 'ToDoList API Server',
-    version: '1.0.0',
-    endpoints: {
-      auth: '/api/auth',
-      projects: '/api/projects',
-      tasks: '/api/tasks'
-    }
-  });
-});
+// // 根路由
+// app.get('/', (req, res) => {
+//   res.json({
+//     success: true,
+//     message: 'ToDoList API Server',
+//     version: '1.0.0',
+//     endpoints: {
+//       auth: '/api/auth',
+//       projects: '/api/projects',
+//       tasks: '/api/tasks'
+//     }
+//   });
+// });
 
 // 健康檢查
 app.get('/health', (req, res) => {
@@ -67,20 +67,39 @@ app.get('/health', (req, res) => {
   });
 });
 
-// 404 處理
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: '找不到請求的端點'
-  });
-});
+// // 404 處理
+// app.use((req, res) => {
+//   res.status(404).json({
+//     success: false,
+//     message: '找不到請求的端點'
+//   });
+// });
 
 // 全域錯誤處理
 app.use(errorHandler);
 
 // 啟動伺服器
-const APP_PORT = process.env.APP_PORT || 5000;
-const APP_HOST = process.env.APP_HOST || '0.0.0.0';
+const APP_PORT = process.env.APP_PORT;
+const APP_HOST = process.env.APP_HOST;
+const APP_NAME = process.env.APP_NAME;
+
+// ========== 靜態檔案服務（必須在 API 之後） ==========
+// 服務 /apps/{APP_NAME} 路徑的靜態檔案（動態使用 APP_NAME）
+app.use(`/apps/${APP_NAME}`, express.static(path.join(__dirname, 'frontend-build')));
+
+// 服務根路徑的靜態檔案
+console.log(path.join(__dirname, 'frontend-build'));
+app.use('/', express.static(path.join(__dirname, 'frontend-build')));
+
+// 處理 SPA 路由（必須放在最後）
+app.get(`/apps/${APP_NAME}/*`, (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend-build', 'index.html'));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend-build', 'index.html'));
+});
+
 const server = app.listen(APP_PORT, APP_HOST, async () => {
   console.log(`
 ╔════════════════════════════════════════╗

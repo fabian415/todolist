@@ -1,10 +1,4 @@
-const OpenAI = require('openai');
-
-// 初始化 OpenAI 客户端，配置为使用 Ollama
-const client = new OpenAI({
-  baseURL: process.env.OLLAMA_BASE_URL || 'http://localhost:11434/v1',
-  apiKey: 'ollama', // Ollama 不需要真實的 API key，但客戶端要求必須提供
-});
+const gaisService = require('./gaisService');
 
 /**
  * 使用 LLM 將用戶輸入的描述拆解成結構化任務
@@ -64,17 +58,31 @@ async function parseTaskDescription(userInput, currentDate = new Date()) {
 
 ${userInput}`;
 
-    const response = await client.chat.completions.create({
-      model: process.env.OLLAMA_MODEL || 'llama3.2',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.3, // 降低隨機性，確保輸出更穩定
-      response_format: { type: 'json_object' } // 要求回應 JSON 格式
-    });
+    // 使用 gaisService.chat 方法調用 Ollama API
+    const response = await gaisService.chat([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ]);
 
-    const content = response.choices[0].message.content;
+    // 處理流式響應，累積完整的回應內容
+    let content = '';
+    for await (const chunk of response.data) {
+      const lines = chunk.toString().split('\n').filter(line => line.trim());
+      for (const line of lines) {
+        try {
+          const json = JSON.parse(line);
+          if (json.message && json.message.content) {
+            content += json.message.content;
+          }
+          // 檢查是否完成
+          if (json.done) {
+            break;
+          }
+        } catch (e) {
+          // 忽略無法解析的行
+        }
+      }
+    }
     let parsedData;
     
     try {
@@ -121,11 +129,18 @@ ${userInput}`;
  */
 async function testConnection() {
   try {
-    const response = await client.chat.completions.create({
-      model: process.env.OLLAMA_MODEL || 'llama3.2',
-      messages: [{ role: 'user', content: 'Hello' }],
-      max_tokens: 10
-    });
+    const response = await gaisService.chat([
+      { role: 'user', content: 'Hello' }
+    ]);
+    
+    // 驗證響應是否有效
+    if (response && response.data) {
+      // 嘗試讀取第一個 chunk 來確認連接
+      for await (const chunk of response.data) {
+        // 如果能讀取到數據，連接正常
+        return true;
+      }
+    }
     return true;
   } catch (error) {
     console.error('Ollama 連接測試失敗:', error.message);
