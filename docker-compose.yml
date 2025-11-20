@@ -37,8 +37,8 @@ services:
       - APP_VERSION=${APP_VERSION}
       - APP_TITLE=${APP_TITLE}
       - APP_DESCRIPTION=${APP_DESCRIPTION}
-      - APP_LOGO=/app/logo.png
-      - APP_HOST=backend
+      - APP_LOGO=${APP_LOGO}
+      - APP_HOST=${APP_HOST}
       - APP_PORT=${APP_PORT}
       - APP_TOKEN=${APP_TOKEN}
       - GAIS_HOST=${GAIS_HOST}
@@ -47,6 +47,8 @@ services:
       - GAIS_PROTOCOL=${GAIS_PROTOCOL}
       - OLLAMA_HOST=${OLLAMA_HOST}
       - MONGODB_URI=mongodb://admin:secret@mongodb:27017/todolist?authSource=admin
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRE=${JWT_EXPIRE}
     ports:
       - "${HOST_PORT}:${APP_PORT}"
     networks:

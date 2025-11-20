@@ -57,7 +57,6 @@ staging:
 	@cp .env staging/etc/.env
 	@echo "==> Replacing development values with production values..."
 	@sed -i 's|GAIS_HOST=.*|GAIS_HOST=gais_core_server|g' staging/etc/.env
-	@sed -i 's|OLLAMA_HOST=.*|OLLAMA_HOST=http://ollama:11434|g' staging/etc/.env
 	@sed -i 's|APP_HOST=.*|APP_HOST=backend|g' staging/etc/.env
 	@echo "" >> staging/etc/.env
 	@echo "# 註冊到 GenAI Studio 時使用的 URL" >> staging/etc/.env

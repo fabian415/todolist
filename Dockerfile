@@ -21,8 +21,7 @@ COPY backend/package*.json ./
 RUN npm ci --only=production
 
 # 複製後端程式碼
-COPY backend/*.js ./
-COPY backend/logo.png ./
+COPY backend/ ./
 
 # 從 Stage 1 複製建置好的前端檔案
 COPY --from=frontend-builder /frontend/build ./frontend-build

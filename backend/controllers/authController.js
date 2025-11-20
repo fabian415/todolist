@@ -25,7 +25,6 @@ exports.register = async (req, res, next) => {
 
     // 產生 Token
     const token = generateToken(user._id);
-
     res.status(201).json({
       success: true,
       message: '註冊成功',

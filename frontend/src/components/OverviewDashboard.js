@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import * as d3 from 'd3';
 import useResizeObserver from '../hooks/useResizeObserver';
 

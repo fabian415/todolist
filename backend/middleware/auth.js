@@ -1,5 +1,13 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+// 載入專案根目錄的 .env 文件，並支援變數替換
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
+const path = require('path');
+const myEnv = dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
+if (!myEnv.error) {
+  dotenvExpand.expand(myEnv);
+}
 
 // 保護路由 - 驗證 JWT Token
 exports.protect = async (req, res, next) => {

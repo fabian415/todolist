@@ -21,7 +21,7 @@ class GAISService {
     this.appVersion = process.env.APP_VERSION || '1.0.0';
     this.appTitle = process.env.APP_TITLE || 'ToDoList 專案管理系統';
     this.appDescription = process.env.APP_DESCRIPTION || '一個功能完整的專案與任務管理系統';
-    this.appLogo = process.env.APP_LOGO || './logo.png';
+    this.appLogo = process.env.APP_LOGO || 'logo.png';
     
     // 網路配置
     this.appHost = process.env.APP_HOST;
@@ -75,6 +75,25 @@ class GAISService {
     try {
       const logoPath = path.join(__dirname, '..', this.appLogo);
       const logoBase64 = this.toBase64(logoPath);
+      console.log(JSON.stringify(
+        {
+          protocol: this.gaisProtocol,
+          properties: {
+            name: this.appName,
+            version: this.appVersion,
+            title: this.appTitle,
+            description: this.appDescription,
+            logo: logoBase64,
+            // 應用程式的訪問 URL
+            url: `http://${this.appName}-app:${this.appPort}`,
+            // GAIS 平台會定期呼叫這些端點
+            ping: '/api/ping',
+            diagnosis: '/api/diagnosis',
+            reregister: '/api/reregister',
+          },
+          resources: ['ollama'], // 需要的資源
+        }));
+
 
       const response = await axios.post(
         `${this.gaisServer}/api/apps/register`,
@@ -193,6 +212,15 @@ class GAISService {
    * @returns {Promise<Response>} Axios 回應
    */
   async chat(messages) {
+    console.log("================================");
+    console.log(`${this.ollamaHost}/api/chat`,
+        {
+          model: this.gaisModel,
+          messages,
+          stream: true,
+        },
+        { responseType: 'stream' });
+    console.log("================================");
     try {
       const response = await axios.post(
         `${this.ollamaHost}/api/chat`,
@@ -201,7 +229,9 @@ class GAISService {
           messages,
           stream: true,
         },
-        { responseType: 'stream' }
+        { responseType: 'stream', 
+          timeout: 180000 
+        }
       );
       
       return response;

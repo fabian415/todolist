@@ -2,6 +2,7 @@
   "name": "todolist-frontend",
   "version": "1.0.0",
   "description": "ToDoList Frontend with React",
+  "homepage": "/apps/task-manager",
   "private": true,
   "dependencies": {
     "axios": "^1.6.0",
@@ -11,8 +12,8 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "env-cmd -f ../.env react-scripts start",
-    "build": "env-cmd -f ../.env react-scripts build",
+    "start": "set PORT=3001 && react-scripts start",
+    "build": "set PORT=3001 && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -35,6 +36,9 @@
   },
   "proxy": "http://localhost:3000",
   "devDependencies": {
-    "env-cmd": "^11.0.0"
+    "autoprefixer": "^10.4.22",
+    "env-cmd": "^11.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18"
   }
 }

@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // 建立 axios 實例
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
-  timeout: 10000,
+  baseURL: "http://172.22.12.128:3005/api",
+  timeout: 180000,
   headers: {
     'Content-Type': 'application/json'
   }
